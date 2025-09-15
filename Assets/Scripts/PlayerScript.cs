@@ -8,20 +8,20 @@ using UnityEngine.SceneManagement;
 public class PlayerScript : MonoBehaviour
 {
     //These are the player's Variables, the raw info that defines them
-    
+
     //The Rigidbody2D is a component that gives the player physics, and is what we use to move
     public Rigidbody2D RB;
 
     //TextMeshPro is a component that draws text on the screen.
     //We use this one to show our score.
     public TextMeshPro ScoreText;
-    
+
     //This will control how fast the player moves
     public float Speed = 5;
-    
+
     //This is how many points we currently have
     public int Score = 0;
-    
+
     //Start automatically gets triggered once when the objects turns on/the game starts
     void Start()
     {
@@ -35,33 +35,68 @@ public class PlayerScript : MonoBehaviour
     {
         //The code below controls the character's movement
         //First we make a variable that we'll use to record how we want to move
-        Vector2 vel = new Vector2(0,0);
-        
+        Vector2 vel = new Vector2(0, 0);
+
         //Then we use if statement to figure out what that variable should look like
-        
+
         //If I hold the right arrow key, the player should move right. . .
-        if (Input.GetKey(KeyCode.RightArrow))
+        // Modified(Omaru Jawara): Add WASD keys as options to arrow keys
+        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             vel.x = Speed;
         }
         //If I hold the left arrow, the player should move left. . .
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             vel.x = -Speed;
         }
         //If I hold the up arrow, the player should move up. . .
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
         {
             vel.y = Speed;
         }
         //If I hold the down arrow, the player should move down. . .
-        if (Input.GetKey(KeyCode.DownArrow))
+        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
             vel.y = -Speed;
         }
-        
+
         //Finally, I take that variable and I feed it to the component in charge of movement
         RB.linearVelocity = vel;
+
+
+        //  Author: (Omaru Jawara)
+        //  Handle screen wrap-around if player exit the game field. 
+        int posX = 13; // Assign x position in this single line
+        int posY = 5; // Assign y position in this single line
+        if (transform.position.x > posX)
+        {
+            Vector3 pos = transform.position;
+            pos.x = -posX;
+            transform.position = pos;
+        }
+
+        if (transform.position.x < -posX)
+        {
+            Vector3 pos = transform.position;
+            pos.x = posX;
+            transform.position = pos;
+        }
+
+        if (transform.position.y > posY)
+        {
+            Vector3 pos = transform.position;
+            pos.y = -posY;
+            transform.position = pos;
+        }
+
+        if (transform.position.y < -posY)
+        {
+            Vector3 pos = transform.position;
+            pos.y = posY;
+            transform.position = pos;
+        }
+
     }
 
     //This gets called whenever you bump into another object, like a wall or coin.
@@ -74,7 +109,7 @@ public class PlayerScript : MonoBehaviour
             //Run your 'you lose' function!
             Die();
         }
-        
+
         //This checks to see if the thing you bumped into has the CoinScript script on it
         CoinScript coin = other.gameObject.GetComponent<CoinScript>();
         //If it does, run the code block belows
